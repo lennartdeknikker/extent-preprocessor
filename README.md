@@ -1,5 +1,5 @@
-# extent-preprocessor
-This script is used to process extent properties obtained from the Volkenkunde Museum's collection data.
+# Preprocessor for Extent Data
+This script is used to process extent properties obtained from the [Volkenkunde Museum](https://www.volkenkunde.nl/en)'s collection data.
 The extent data does not come back in a universal format. 
 ### Some examples
 - circa 124 x 17 x 18 cm (48 13/16 x 6 11/16in.)
@@ -9,8 +9,8 @@ The extent data does not come back in a universal format.
 This script transforms all extent data to the same format.
 
 
-# File structure
-## Input
+## File structure
+### Input (.json)
 Running queries on the database result in .json files following the structure below:
 ```
 { "head": { "link": [], "vars": ["identifier", "extentSample"] },
@@ -22,7 +22,7 @@ Running queries on the database result in .json files following the structure be
 }
 ```
 
-## Output
+### Output (.json)
 ```
 [
     {
@@ -46,7 +46,7 @@ Running queries on the database result in .json files following the structure be
 6. Check out the result in the output folder.
 
 
-# Query example
+## Query example
 The input data, this script is built to work on, can be obtained from Volkenkunde's database by SPARQL queries like this one:
 ```
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
