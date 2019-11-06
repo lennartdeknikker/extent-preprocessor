@@ -32,7 +32,8 @@ This script transforms all extent data to the same format.
             "height": "18",
             "weight": "60 kg",
             "precise": false
-        }, 
+        }
+     },
         ...
 ]
 ```
