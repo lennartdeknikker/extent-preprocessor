@@ -11,7 +11,6 @@ This script transforms all extent data to the same format.
 
 ## File structure
 ### Input (.json)
-Running queries on the database result in .json files following the structure below:
 ```
 { "head": { "link": [], "vars": ["identifier", "extentSample"] },
   "results": { "distinct": false, "ordered": true, "bindings": [
@@ -37,7 +36,7 @@ Running queries on the database result in .json files following the structure be
 ]
 ```
 
-# Usage
+## Usage
 1. Clone this repo to your local environment.
 2. Install dependencies using `npm install`
 3. Create an input and an output folder.
