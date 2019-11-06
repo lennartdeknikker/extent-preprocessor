@@ -15,7 +15,7 @@ This script transforms all extent data to the same format.
 { "head": { "link": [], "vars": ["identifier", "extentSample"] },
   "results": { "distinct": false, "ordered": true, "bindings": [
     { "identifier": { "type": "literal", "value": "AB-1234-56" },
-    "extentSample": { "type": "literal", "value": "circa 124 x 17 x 18 cm (48 13/16 x 6 11/16in.)" }},
+    "extentSample": { "type": "literal", "value": "circa 124 x 17 x 18 cm (48 13/16 x 6 11/16in.); 60 kg" }},
     ...
     ] } 
 }
@@ -30,6 +30,7 @@ This script transforms all extent data to the same format.
             "length": "124",
             "width": "17",
             "height": "18",
+            "weight": "60 kg",
             "precise": false
         }, 
         ...
