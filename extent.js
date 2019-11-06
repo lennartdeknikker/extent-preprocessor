@@ -20,11 +20,13 @@ bindings.forEach(result => {
 // Loop over all objects
 dataArray.forEach(entry => {
     let precise = true;
+    let weight = '';
     // remove text between brackets
     entry.extent = entry.extent.replace(/ *\([^)]*\) */g, '');
     // remove text after semicolons
     if (entry.extent.includes(';')) {
         let semicolonPosition = entry.extent.indexOf(';')
+        weight = entry.extent.substring(semicolonPosition+1,entry.extent.length);
         entry.extent = entry.extent.substring(0, semicolonPosition);
     }
     // remove measuring units, since it's all in cm's
@@ -52,6 +54,7 @@ dataArray.forEach(entry => {
         length: length.trim(),
         width: width.trim(),
         height: height.trim(),
+        weight: weight.trim(),
         precise: precise
     }
 });
