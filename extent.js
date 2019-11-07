@@ -19,7 +19,7 @@ bindings.forEach(result => {
         identifier: result.identifier.value,
         extent: {
             oldValue: result.extentSample.value,
-            size: {
+            dimensions: {
                 length: null,
                 width: null,
                 height: null,
@@ -63,7 +63,7 @@ dataArray.forEach(entry => {
         entry.extent.oldValue = replaceCommasIn(entry.extent.oldValue)
     }
     // splits length, width and height in different properties.
-    subtractSizeValuesFrom(entry.extent);
+    subtractDimensionValuesFrom(entry.extent);
 
     // removes the old values.
     delete entry.extent.oldValue;
@@ -113,13 +113,13 @@ function replaceCommasIn(oldValue) {
     return newValue;
 }
 
-// subtracts the size values from the old value and splits them in different properties.
-function subtractSizeValuesFrom(extent) {
+// subtracts the dimension values from the old value and splits them in different properties.
+function subtractDimensionValuesFrom(extent) {
 let newExtent = extent;
 [length = '', width = '', height = ''] = extent.oldValue.split('x');
-newExtent.size.length = stringToNumber(length);
-newExtent.size.width = stringToNumber(width);
-newExtent.size.height = stringToNumber(height);
+newExtent.dimensions.length = stringToNumber(length);
+newExtent.dimensions.width = stringToNumber(width);
+newExtent.dimensions.height = stringToNumber(height);
 return newExtent;
 }
 
