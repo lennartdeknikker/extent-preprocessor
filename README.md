@@ -27,14 +27,20 @@ This script transforms all extent data to the same format.
     {
         "identifier": "AB-1234-56",
         "extent": {
-            "length": "124 cm",
-            "width": "17 cm",
-            "height": "18 cm",
-            "weight": "60 kg",
-            "precise": false
+            "size": {
+                "length": 124,
+                "width": 17,
+                "height": 18,
+                "unit": "cm"
+            },
+            "weight": {
+                "value": 60,
+                "unit": "kg"
+            },
+            "exact": false
         }
      },
-        ...
+    ...
 ]
 ```
 
