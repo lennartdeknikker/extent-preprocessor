@@ -12,8 +12,8 @@ const stringToNumber = x => Number(x.trim());
 
 let dataArray = [];
 
-// Push all relevant data in an array of objects 
-// with identifier and extent as properties
+// Pushes all relevant data in an array of objects 
+// with the necessary new properties
 bindings.forEach(result => {
     let newObject = {
         identifier: result.identifier.value,
@@ -34,46 +34,97 @@ bindings.forEach(result => {
     } 
     dataArray.push(newObject);
 });
+
 // Loop over all objects
 dataArray.forEach(entry => {
-//     let exact = true;
-//     let weight = '';
-// remove text between brackets
-entry.extent.oldValue = removeTextBetweenBrackets(entry.extent.oldValue);
-// remove text after semicolons
-if (entry.extent.oldValue.includes(';')) {
-    entry.extent = subtractWeightFrom(entry.extent);
-}
-// remove measuring units, since it's all in cm's
-if (entry.extent.oldValue.includes('cm')) {
-    entry.extent.oldValue = deleteUnitNotationFrom(entry.extent.oldValue);
-}
-// replace 'circa' as identifier of possible divergence
-// with a 'exact' property on extent.
-if (entry.extent.oldValue.includes('circa')) {
-    subtractPrecisionFrom(entry.extent);
-}
-// replace stupid alternative x-characters
-if (entry.extent.oldValue.includes('×')) {
-    entry.extent.oldValue = normalizeXCharactersIn(entry.extent.oldValue);
-}
-// replace ',' with '.'
-if (entry.extent.oldValue.includes(',')) {
-    entry.extent.oldValue = replaceCommasIn(entry.extent.oldValue)
-}
 
-// split length, width and height in different properties.
-subtractSizeValuesFrom(entry.extent);
+    // removes redundant data from the old values.
+    entry.extent.oldValue = removeTextBetweenBrackets(entry.extent.oldValue);
 
-// remove the old values.
-delete entry.extent.oldValue;
+    // tests for weight data and stores those in different properties.
+    if (entry.extent.oldValue.includes(';')) {
+        entry.extent = subtractWeightFrom(entry.extent);
+    }
+    // tests for measuring units and removes those, since it's all in cm anyway.
+    if (entry.extent.oldValue.includes('cm')) {
+        entry.extent.oldValue = deleteUnitNotationFrom(entry.extent.oldValue);
+    }
+    // tests for circa as identifier of possible divergence and
+    // replaces 'circa' with a false 'exact' property on extent.
+    if (entry.extent.oldValue.includes('circa')) {
+        subtractPrecisionFrom(entry.extent);
+    }
+    // tests for stupid alternative x-characters and replaces those with 'x's
+    if (entry.extent.oldValue.includes('×')) {
+        entry.extent.oldValue = normalizeXCharactersIn(entry.extent.oldValue);
+    }
+    // tests for ','s and replaces those with '.'s
+    if (entry.extent.oldValue.includes(',')) {
+        entry.extent.oldValue = replaceCommasIn(entry.extent.oldValue)
+    }
+    // splits length, width and height in different properties.
+    subtractSizeValuesFrom(entry.extent);
+
+    // removes the old values.
+    delete entry.extent.oldValue;
 
 });
 
-// write file to output folder
+// writes the file to output folder.
 writeDataFile(dataArray);
 
+// subtracts weight data from the old value and stores them in weight properties.
+function subtractWeightFrom(extent) {
+    let newExtent = extent;
+    const semicolonPosition = extent.oldValue.indexOf(';')
+    const weightText = extent.oldValue.substring(semicolonPosition+1, extent.length);
+    const remainingText = extent.oldValue.substring(0, semicolonPosition);
+    const weightNumber = weightText.replace(/[^0-9\.]+/g, "");
+    const weightUnit = weightText.replace(/\d+/g,'');
+    newExtent.oldValue = remainingText;
+    newExtent.weight.value = weightNumber;
+    newExtent.weight.unit = weightUnit;
+    return newExtent;
+}
+
+// changes exact property to false when the old value says 'circa'.
+function subtractPrecisionFrom(extent) {
+    let newExtent = extent;
+    newExtent.exact = false;
+    newExtent.oldValue = extent.oldValue.replace('circa','');
+    return newExtent;
+}
+
+// changes strange alternative x-characters to normal 'x's
+function normalizeXCharactersIn(oldValue) {
+    let newValue = oldValue;    
+    while (newValue.includes('×')) {
+        newValue = newValue.replace('×', 'x');
+    }
+    return newValue;
+}
+
+// replaces commas in old numeric values to '.'s, so those values can be transformed to numbers.
+function replaceCommasIn(oldValue) {
+    let newValue = oldValue;
+    while (newValue.includes(',')) {
+        newValue = newValue.replace(',', '.');
+    }
+    return newValue;
+}
+
+// subtracts the size values from the old value and splits them in different properties.
+function subtractSizeValuesFrom(extent) {
+let newExtent = extent;
+[length = '', width = '', height = ''] = extent.oldValue.split('x');
+newExtent.size.length = stringToNumber(length);
+newExtent.size.width = stringToNumber(width);
+newExtent.size.height = stringToNumber(height);
+return newExtent;
+}
+
 // copied from: https://github.com/Razpudding/preprocessing-survey/blob/master/preprocessing.js
+// writes the transformed array to a .json file.
 function writeDataFile(data, fileIndex = 0)
 {
 	fs.writeFile(outputFileName +'_'+ fileIndex +'.json',
@@ -89,51 +140,4 @@ function writeDataFile(data, fileIndex = 0)
 	    	console.log('The file was saved!')
 	    }
 	})
-}
-
-
-
-function subtractWeightFrom(extent) {
-    let newExtent = extent;
-    const semicolonPosition = extent.oldValue.indexOf(';')
-    const weightText = extent.oldValue.substring(semicolonPosition+1, extent.length);
-    const remainingText = extent.oldValue.substring(0, semicolonPosition);
-    const weightNumber = weightText.replace(/[^0-9\.]+/g, "");
-    const weightUnit = weightText.replace(/\d+/g,'');
-    newExtent.oldValue = remainingText;
-    newExtent.weight.value = weightNumber;
-    newExtent.weight.unit = weightUnit;
-    return newExtent;
-}
-
-function subtractPrecisionFrom(extent) {
-    let newExtent = extent;
-    newExtent.exact = false;
-    newExtent.oldValue = extent.oldValue.replace('circa','');
-    return newExtent;
-}
-
-function normalizeXCharactersIn(oldValue) {
-    let newValue = oldValue;    
-    while (newValue.includes('×')) {
-        newValue = newValue.replace('×', 'x');
-    }
-    return newValue;
-}
-
-function replaceCommasIn(oldValue) {
-    let newValue = oldValue;
-    while (newValue.includes(',')) {
-        newValue = newValue.replace(',', '.');
-    }
-    return newValue;
-}
-
-function subtractSizeValuesFrom(extent) {
-let newExtent = extent;
-[length = '', width = '', height = ''] = extent.oldValue.split('x');
-newExtent.size.length = stringToNumber(length);
-newExtent.size.width = stringToNumber(width);
-newExtent.size.height = stringToNumber(height);
-return newExtent;
 }
