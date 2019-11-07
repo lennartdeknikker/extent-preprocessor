@@ -19,7 +19,7 @@ bindings.forEach(result => {
 
 // Loop over all objects
 dataArray.forEach(entry => {
-    let precise = true;
+    let exact = true;
     let weight = '';
     // remove text between brackets
     entry.extent = entry.extent.replace(/ *\([^)]*\) */g, '');
@@ -34,10 +34,10 @@ dataArray.forEach(entry => {
         entry.extent = entry.extent.replace('cm','');
     }
     // replace 'circa' as identifier of possible divergence
-    // with a 'precise' property on extent.
+    // with a 'exact' property on extent.
     if (entry.extent.includes('circa')) {
         entry.extent = entry.extent.replace('circa','');
-        precise = false;
+        exact = false;
     }
     // replace stupid alternative x-characters
     if (entry.extent.includes('×')) {
@@ -45,22 +45,29 @@ dataArray.forEach(entry => {
         entry.extent = entry.extent.replace('×', 'x');
         }
     }
+    // replace ',' with '.'
+    if (entry.extent.includes(',')) {
+        while (entry.extent.includes(',')) {
+            entry.extent = entry.extent.replace(',', '.')
+        }
+    }
     
     // split length, width and height in different properties.
     [length = '', width = '', height = ''] = entry.extent.split('x');
 
-    // add metric units
-    if (length != '') length +=' cm';
-    if (width != '') width +=' cm';
-    if (height != '') height +=' cm';
-
     // redefine extent
     entry.extent = {
-        length: length.trim(),
-        width: width.trim(),
-        height: height.trim(),
-        weight: weight.trim(),
-        precise: precise
+        size: {
+            length: stringToNumber(length),
+            width:  stringToNumber(width),
+            height:  stringToNumber(height),
+            unit: 'cm'
+        },
+        weight: {
+            weight:  stringToNumber(weight),
+            unit: 'kg'
+        },
+        exact: exact
     }
 });
 
@@ -83,4 +90,8 @@ function writeDataFile(data, fileIndex = 0)
 	    	console.log('The file was saved!')
 	    }
 	})
+}
+
+function stringToNumber(x) {
+    return Number(x.trim());
 }
