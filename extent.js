@@ -49,6 +49,11 @@ dataArray.forEach(entry => {
     // split length, width and height in different properties.
     [length = '', width = '', height = ''] = entry.extent.split('x');
 
+    // add metric units
+    if (length != '') length +=' cm';
+    if (width != '') width +=' cm';
+    if (height != '') height +=' cm';
+
     // redefine extent
     entry.extent = {
         length: length.trim(),
